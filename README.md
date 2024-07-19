@@ -7,6 +7,8 @@ Do this:
         <artifactId>EasyConfigsAPI</artifactId>
         <version>0.1_BETA</version>
         <scope>provided</scope> <!-- IMPORTANT -->
+        <!-- if you don't have this library installed in your local maven -->
+        <!-- <systemPath>${basedir}/libs/EasyConfigsAPI.jar</systemPath> -->
     </dependency>
 </dependencies>
 ```
