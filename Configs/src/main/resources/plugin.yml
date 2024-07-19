@@ -1,0 +1,15 @@
+name: EasyConfigs
+version: '${project.version}'
+author: codec58
+main: org.codec58.configs.Configs
+api-version: '1.16'
+commands:
+  configEdit:
+    aliases: [ ce ]
+    permission: org.codec58.ConfigsEdit
+  configSave:
+    aliases: [ cs ]
+    permission: org.codec58.ConfigsSave
+  configReload:
+    aliases: [ cr ]
+    permission: org.codec58.ConfigsReload
