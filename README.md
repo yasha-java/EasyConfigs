@@ -1,6 +1,6 @@
 # How to
 Do this:
-```pom
+```maven
 <dependencies>
     <dependency>
         <groupId>org.codec58</groupId>
