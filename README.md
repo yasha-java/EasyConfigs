@@ -1,6 +1,6 @@
 # How to
 Do this:
-```maven
+```xml
 <dependencies>
     <dependency>
         <groupId>org.codec58</groupId>
