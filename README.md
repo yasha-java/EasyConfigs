@@ -1,4 +1,4 @@
-#How to
+# How to
 Do this:
 ```pom
 <dependencies>
@@ -42,5 +42,5 @@ Success!
 
 You can also edit the file directly. In this config manager, configs are saved in JSON format (use /config reload to reload all plugins).
 
-#NOTE
+# NOTE
 'Registry.AddThis()' only works if the successor is called from the singletone JavaPlugin. Therefore, when you try to register it from another class, it will cause an error.
