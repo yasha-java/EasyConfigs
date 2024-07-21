@@ -29,7 +29,7 @@ RegisteredServiceProvider<ConfigRegistry> registry =
         Bukkit.getServicesManager().getRegistration(ConfigRegistry.class);
 
 if (registry == null) {
-    throw new RuntimeException("Please install 'Configs'!");
+    throw new RuntimeException("Please install 'EasyConfigs'!");
 }
 
 registry.getProvider().addThis(this);
