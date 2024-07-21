@@ -1,21 +1,22 @@
-package org.codec58.configs.commands;
+package org.codec58.configs.commands.executors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.codec58.configs.registry.Registry;
+import org.codec58.configs.registry.UpdatedRegistry;
 
 public class ConfigReload implements CommandExecutor {
-    private final Registry registry;
+    private final UpdatedRegistry registry;
 
-    public ConfigReload(Registry registry) {
+    public ConfigReload(UpdatedRegistry registry) {
         this.registry = registry;
     }
 
+    //todo
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         commandSender.sendMessage("Reloading...");
-        registry.reload();
+        registry.reloadAll();
         commandSender.sendMessage("Reloaded!");
         return true;
     }

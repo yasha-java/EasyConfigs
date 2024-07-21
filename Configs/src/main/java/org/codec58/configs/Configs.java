@@ -4,21 +4,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.codec58.configs.commands.ConfigEdit;
-import org.codec58.configs.commands.ConfigEditTabCompleter;
-import org.codec58.configs.commands.ConfigReload;
-import org.codec58.configs.commands.ConfigSave;
-import org.codec58.configs.registry.Registry;
+import org.codec58.configs.commands.executors.ConfigEdit;
+import org.codec58.configs.commands.completers.ConfigEditTabCompleter;
+import org.codec58.configs.commands.executors.ConfigReload;
+import org.codec58.configs.commands.executors.ConfigSave;
+import org.codec58.configs.registry.UpdatedRegistry;
 import org.codec58.easyconfigsapi.ConfigRegistry;
 
 import java.util.Objects;
 
 public final class Configs extends JavaPlugin implements Listener {
-    private final Registry registry = new Registry();
-
-    public Registry getRegistry() {
-        return registry;
-    }
+    private final UpdatedRegistry registry = new UpdatedRegistry();
 
     @Override
     public void onEnable() {

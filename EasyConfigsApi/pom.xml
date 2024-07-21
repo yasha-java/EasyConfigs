@@ -6,7 +6,7 @@
 
     <groupId>org.codec58</groupId>
     <artifactId>EasyConfigsApi</artifactId>
-    <version>0.1_BETA</version>
+    <version>0.2.15_BETA</version>
     <packaging>jar</packaging>
 
     <name>EasyConfigsApi</name>

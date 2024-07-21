@@ -4,7 +4,7 @@
   <groupId>org.codec58</groupId>
   <artifactId>Configs</artifactId>
   <name>Configs</name>
-  <version>0.1_BETA</version>
+  <version>0.2.15_BETA</version>
   <build>
     <resources>
       <resource>

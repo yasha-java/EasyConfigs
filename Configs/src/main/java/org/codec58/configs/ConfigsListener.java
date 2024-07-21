@@ -4,15 +4,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.codec58.configs.registry.Registry;
+import org.codec58.configs.config.DebugConfig;
 
 import java.util.Objects;
 
 public class ConfigsListener implements Listener {
     @EventHandler
     public void onPlugmanReload(PlayerCommandPreprocessEvent evt) {
+        if (!DebugConfig.ACCESS_RELOAD) return;
+
         String cmd = evt.getMessage();
         if (cmd.contains("/plugman") && cmd.contains("Configs") && (cmd.contains("unload") || cmd.contains("reload"))) {
             String perm = Objects.requireNonNull(Bukkit.getPluginCommand("plugman")).getPermission();
