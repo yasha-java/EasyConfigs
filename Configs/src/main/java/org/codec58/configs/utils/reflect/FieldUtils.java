@@ -1,9 +1,7 @@
 package org.codec58.configs.utils.reflect;
 
-import org.codec58.configs.utils.reflect.exception.NonStaticFieldError;
 import org.codec58.configs.utils.reflect.exception.ReflectionError;
 import org.codec58.configs.utils.reflect.exception.ReflectionNoError;
-import org.codec58.configs.utils.reflect.exception.ValueEqualsNullError;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -47,7 +45,7 @@ public class FieldUtils {
                 return new ReflectionError(e);
             }
         } else {
-            return new NonStaticFieldError(f.getName());
+            return new ReflectionError("Field '%s' non static.".formatted(f.getName()));
         }
     }
 
@@ -57,7 +55,7 @@ public class FieldUtils {
                         try {
                             Object fieldValue = field.get(null);
                             if (fieldValue == null) {
-                                return new ValueEqualsNullError(f.getName());
+                                return new ReflectionError("Field '%s' hasn't default value".formatted(f.getName()));
                             }
 
                             return new ReflectionNoError(fieldValue);
@@ -68,7 +66,7 @@ public class FieldUtils {
                     null, f
             );
         } else {
-            return new NonStaticFieldError(f.getName());
+            return new ReflectionError("Field '%s' is non static ".formatted(f.getName()));
         }
     }
 

@@ -79,7 +79,7 @@ public class ConfigEdit implements CommandExecutor {
 
         if (Convertor.isBoolean(value)) {
             valueCompiled = Boolean.valueOf(value);
-        } else if (Convertor.isDouble(value)) {
+        } else if (Convertor.isNumber(value)) {
             valueCompiled = Convertor.double2NumericType(Double.parseDouble(value), variableField.getType());
         } else {
             valueCompiled = value.replace("_", " ");

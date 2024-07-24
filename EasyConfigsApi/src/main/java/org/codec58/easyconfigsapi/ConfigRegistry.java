@@ -13,7 +13,6 @@ public interface ConfigRegistry extends Listener {
     void reloadThis(Plugin plugin);
     void saveThis(Plugin plugin);
     boolean isPluginUsingEasyConfigs(Plugin plugin);
-    Set<Plugin> getPlugins();
     Set<String> getPluginStrings();
 
     @EventHandler

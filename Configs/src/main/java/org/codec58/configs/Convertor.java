@@ -26,7 +26,7 @@ public class Convertor {
                 type.equals(short.class) || type.equals(Short.class);
     }
 
-    public static boolean isDouble(String s) {
+    public static boolean isNumber(String s) {
         try {
             Double.parseDouble(s);
             return true;
@@ -35,7 +35,33 @@ public class Convertor {
         }
     }
 
+    public static Object parseObject(Object obj, Class<?> type) {
+        String s;
+        try {
+            s = obj.toString();
+        } catch (Throwable ignored) {
+            return null;
+        }
+
+        if (isBoolean(s))
+            return getBoolean(s);
+        else if (isNumber(s))
+            return double2NumericType(getNumber(s), type);
+        else if (type.equals(String.class))
+            return s;
+        else
+            return null;
+    }
+
+    public static Double getNumber(String s) {
+        return Double.parseDouble(s);
+    }
+
     public static boolean isBoolean(String s) {
-        return s.equals("true") || s.equals("false");
+        return s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false");
+    }
+
+    public static boolean getBoolean(String s) {
+        return s.equalsIgnoreCase("true");
     }
 }

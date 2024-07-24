@@ -4,7 +4,7 @@
 
   <groupId>org.codec58</groupId>
   <artifactId>EasyConfigs</artifactId>
-  <version>0.2.15_BETA</version>
+  <version>0.2.45_BETA</version>
   <packaging>pom</packaging>
 
   <modules>

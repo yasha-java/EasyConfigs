@@ -4,7 +4,6 @@ import com.google.common.reflect.ClassPath;
 import org.codec58.easyconfigsapi.Config;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,21 +22,21 @@ public class ClassPathUtils {
     }
 
     public static Class<?> getCallerClass() {
-        return getCallerClass0(3);
+        return getCallerClass0();
     }
 
     public static boolean isSelfPackage() {
-        Class<?> caller = getCallerClass0(3);
+        Class<?> caller = getCallerClass0();
         return caller.getPackageName().contains("org.codec58.configs");
     }
 
-    private static Class<?> getCallerClass0(int counter) {
+    private static Class<?> getCallerClass0() {
         StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
         AtomicReference<Class<?>> callerClass = new AtomicReference<>(null);
         AtomicInteger skip = new AtomicInteger(0);
         walker.forEach(frame -> {
             skip.addAndGet(1);
-            if (skip.get() == counter) {
+            if (skip.get() == 3) {
                 callerClass.set(frame.getDeclaringClass());
             }
         });

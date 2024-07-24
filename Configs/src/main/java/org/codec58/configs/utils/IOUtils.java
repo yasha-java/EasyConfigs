@@ -1,11 +1,25 @@
 package org.codec58.configs.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.json.JSONObject;
+
+import java.io.*;
+import java.nio.file.Path;
+import java.util.Date;
 
 public class IOUtils {
+    public static JSONObject loadConfig(File f) {
+        try {
+            if (!f.exists())
+                return null;
+
+            return new JSONObject(readString(f));
+        } catch (Throwable ignored) {
+            return null;
+        }
+    }
+
     public static String readString(File f) {
         try(FileInputStream stream = new FileInputStream(f)) {
             return new String(stream.readAllBytes());
@@ -29,5 +43,35 @@ public class IOUtils {
     public static void createFile(File f) throws IOException {
         var ignored = f.getParentFile().mkdirs();
         ignored = f.createNewFile();
+    }
+
+    public static void createInvalidBackup(File whatCreating, Plugin plugin, String configName, String reason) {
+        String compiledName =  "%s-%s-%s-%s".formatted(
+                plugin.getName(),
+                configName,
+                new Date().toString(),
+                reason
+        );
+        File fBackup = Path.of(plugin.getDataFolder().toPath().toString(), compiledName).toFile();
+
+        if (fBackup.exists()) {
+            var ignored = fBackup.delete();
+        }
+
+        try {
+            createFile(fBackup);
+        } catch (IOException e) {
+            Bukkit.getConsoleSender().sendMessage("Can't create '%s' of invalid config!".formatted(compiledName));
+            e.printStackTrace(System.err);
+            return;
+        }
+
+        try(FileOutputStream oStream = new FileOutputStream(fBackup);
+            FileInputStream  iStream = new FileInputStream(whatCreating)) {
+            oStream.write(iStream.readAllBytes());
+        } catch (IOException e) {
+            Bukkit.getConsoleSender().sendMessage("Can't create '%s' of invalid config!".formatted(compiledName));
+            e.printStackTrace(System.err);
+        }
     }
 }

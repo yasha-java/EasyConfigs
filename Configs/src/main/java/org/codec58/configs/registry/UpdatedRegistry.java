@@ -6,13 +6,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
-import org.codec58.configs.config.PluginConfig;
+import org.codec58.configs.utils.ConfigUpdater;
 import org.codec58.configs.utils.ConfigUtils;
 import org.codec58.configs.utils.IOUtils;
+import org.codec58.configs.utils.errors.ConfigValueError;
 import org.codec58.configs.utils.reflect.ClassPathUtils;
-import org.codec58.configs.utils.reflect.FieldUtils;
 import org.codec58.easyconfigsapi.ConfigRegistry;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
@@ -42,7 +41,7 @@ public class UpdatedRegistry implements ConfigRegistry, Listener {
                     plugin.getClass().getPackage()
             );
         } catch (Throwable err) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Unhandled exception:");
+            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Unhandled exception:");
             err.printStackTrace(System.err);
             return;
         }
@@ -52,30 +51,25 @@ public class UpdatedRegistry implements ConfigRegistry, Listener {
         for (Class<?> packageClass : classes) {
             if (ConfigUtils.isConfigClass(packageClass)) {
                 String configName = ConfigUtils.getConfigName(packageClass);
-                Set<Field> configFields = ConfigUtils.getConfigFields(packageClass);
 
-                if (ConfigUtils.isConfigExist(configName, plugin)) {
-                    JSONObject config;
-                    try {
-                        config =
-                                new JSONObject(IOUtils.readString(ConfigUtils.getConfigFile(configName, plugin)));
-                    } catch (JSONException err) {
-                        Bukkit.getConsoleSender().sendMessage("Error while reading config: ");
-                        err.printStackTrace(System.err);
-                        continue;
-                    }
-
-                    for (Field field : configFields) {
-                        String variableName = ConfigUtils.getConfigVariableName(field);
-                        if (config.has(variableName)) {
-                            try {
-                                FieldUtils.setStatic(field, config.get(variableName));
-                            } catch (Throwable ignored) {}
-                        }
-                    }
+                JSONObject config = IOUtils.loadConfig(ConfigUtils.getConfigFile(configName, plugin));
+                if (config == null) {
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Can't load config '%s' for plugin '%s'.".formatted(configName, plugin.getName()));
+                    continue;
                 }
 
-                localRegistry.put(packageClass, configFields);
+                List<ConfigValueError> errors = ConfigUpdater.updateValues(
+                        plugin,
+                        config,
+                        packageClass
+                );
+
+                if (!errors.isEmpty()) {
+                    Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "There were some errors when loading the '%s' config: ".formatted(configName));
+                    errors.forEach(System.err::println);
+                }
+
+                localRegistry.put(packageClass, ConfigUtils.getConfigFields(packageClass));
             }
         }
 
@@ -84,6 +78,11 @@ public class UpdatedRegistry implements ConfigRegistry, Listener {
 
     @Override
     public void removeThis(Plugin plugin) {
+        if (!plugin.getClass().equals(ClassPathUtils.getCallerClass()) && !ClassPathUtils.isSelfPackage()) {
+            Bukkit.getConsoleSender().sendMessage( ChatColor.YELLOW + ClassPathUtils.getCallerClass().getSimpleName() + " attempts to remove our plugin!");
+            return;
+        }
+
         compiledRegistry.remove(plugin.getName());
     }
 
@@ -107,11 +106,16 @@ public class UpdatedRegistry implements ConfigRegistry, Listener {
     }
 
     public void saveAll() {
+        if (!ClassPathUtils.isSelfPackage()) {
+            Bukkit.getConsoleSender().sendMessage( ChatColor.YELLOW + ClassPathUtils.getCallerClass().getSimpleName() + " attempts to save all configs!");
+            return;
+        }
+
         compiledRegistry.forEach((pName, lReg) -> {
             Plugin plugin = Bukkit.getPluginManager().getPlugin(pName);
 
             if (plugin == null) {
-                Bukkit.getConsoleSender().sendMessage(PluginConfig.PLUGIN_DEACTIVATED_IN_PROCESS.formatted(pName));
+                Bukkit.getConsoleSender().sendMessage("Plugin '%s' has been deactivated in server work process. Can't write config file".formatted(pName));
                 return;
             }
 
@@ -135,22 +139,27 @@ public class UpdatedRegistry implements ConfigRegistry, Listener {
 
         if (compiledRegistry.containsKey(plugin.getName())) {
             compiledRegistry.remove(plugin.getName());
-
             addThis(plugin);
         }
     }
 
     public void reloadAll() {
+        if (!ClassPathUtils.isSelfPackage()) {
+            Bukkit.getConsoleSender().sendMessage( ChatColor.YELLOW + ClassPathUtils.getCallerClass().getSimpleName() + " attempts to reload all configs!");
+            return;
+        }
+
         List<Plugin> tReload = new ArrayList<>();
 
         compiledRegistry.keySet().forEach(pName -> {
             Plugin p = Bukkit.getPluginManager().getPlugin(pName);
             if (p != null)
                 tReload.add(Bukkit.getPluginManager().getPlugin(pName));
+            else
+                Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "Can't reload deactivated plugin '%s'".formatted(pName));
         });
 
         compiledRegistry.clear();
-
         tReload.forEach(this::addThis);
     }
 
@@ -162,11 +171,6 @@ public class UpdatedRegistry implements ConfigRegistry, Listener {
     @Override
     public boolean isPluginUsingEasyConfigs(Plugin plugin) {
         return compiledRegistry.containsKey(plugin.getName());
-    }
-
-    @Override
-    public Set<Plugin> getPlugins() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
