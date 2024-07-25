@@ -2,6 +2,7 @@ package org.codec58.configs.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -9,12 +10,15 @@ import java.nio.file.Path;
 import java.util.Date;
 
 public class IOUtils {
-    public static JSONObject loadConfig(File f) {
+    public static JSONObject loadConfig(File f, Plugin p, String n) {
         try {
             if (!f.exists())
                 return null;
 
             return new JSONObject(readString(f));
+        } catch (JSONException ignored) {
+            createInvalidBackup(f, p, n, "invalid_config");
+            return null;
         } catch (Throwable ignored) {
             return null;
         }

@@ -52,7 +52,7 @@ public class UpdatedRegistry implements ConfigRegistry, Listener {
             if (ConfigUtils.isConfigClass(packageClass)) {
                 String configName = ConfigUtils.getConfigName(packageClass);
 
-                JSONObject config = IOUtils.loadConfig(ConfigUtils.getConfigFile(configName, plugin));
+                JSONObject config = IOUtils.loadConfig(ConfigUtils.getConfigFile(configName, plugin), plugin, configName);
                 if (config == null) {
                     Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Can't load config '%s' for plugin '%s'.".formatted(configName, plugin.getName()));
                     continue;
